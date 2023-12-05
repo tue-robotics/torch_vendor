@@ -1,6 +1,8 @@
-cmake_minimum_required(VERSION 3.16.0)
+cmake_minimum_required(VERSION 3.24.0)
 project(torch_vendor)
 include(FetchContent)
+
+cmake_policy(SET CMP0135 NEW)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
