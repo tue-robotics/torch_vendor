@@ -1,5 +1,9 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5.0)
 project(torch_vendor)
+#set(CMAKE_CUDA_ARCHITECTURES "native")
+include(FetchContent)
+
+cmake_policy(SET CMP0135 NEW)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -9,10 +13,42 @@ find_package(catkin REQUIRED)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
-## Uncomment this if the package has a setup.py. This macro ensures
-## modules and global scripts declared therein get installed
-## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
+set(FETCHCONTENT_QUIET FALSE)
+FetchContent_Declare(
+  libtorch
+  URL https://download.pytorch.org/libtorch/cu121/libtorch-cxx11-abi-shared-with-deps-2.1.1%2Bcu121.zip
+  OVERRIDE_FIND_PACKAGE
+  DOWNLOAD_EXTRACT_TIMESTAMP
+)
+#FetchContent_Populate(Torch)
+FetchContent_MakeAvailable(libtorch)
+#FetchContent_GetProperties(Torch)
+#if(NOT torch_POPULATED)
+#    FetchContent_Populate(torch)
+#    add_subdirectory(${torch_SOURCE_DIR})
+#    add_subdirectory(${torch_BINARY_DIR})
+#endif()
+#list(APPEND CMAKE_PREFIX_PATH "${torch_SOURCE_DIR}")
+
+find_package(Torch REQUIRED PATHS ${libtorch_SOURCE_DIR} NO_DEFAULT_PATH)
+message(WARNING "Torch_FOUND: ${Torch_FOUND}")
+message(WARNING "TORCH_FOUND: ${TORCH_FOUND}")
+message(WARNING "TORCH_INCLUDE_DIRS: ${TORCH_INCLUDE_DIRS}")
+message(WARNING "TORCH_LIBRARIES: ${TORCH_LIBRARIES}")
+message(WARNING "TORCH_LIBRARY: ${TORCH_LIBRARY}")
+message(WARNING "libtorch_SOURCE_DIR: ${libtorch_SOURCE_DIR}")
+message(WARNING "libtorch_BINARY_DIR: ${libtorch_BINARY_DIR}")
+message(WARNING "CATKIN_PACKAGE_LIB_DESTINATION: ${CATKIN_PACKAGE_LIB_DESTINATION}")
+message(WARNING "CATKIN_GLOBAL_BIN_DESTINATION: ${CATKIN_GLOBAL_BIN_DESTINATION}")
+message(WARNING "CATKIN_PACKAGE_INCLUDE_DESTINATION: ${CATKIN_PACKAGE_INCLUDE_DESTINATION}")
+
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+
+#get_cmake_property(_variableNames VARIABLES)
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message(WARNING "${_variableName}=${${_variableName}}")
+#endforeach()
 
 ###################################
 ## catkin specific configuration ##
@@ -24,10 +60,10 @@ find_package(catkin REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES torch_vendor
+#  INCLUDE_DIRS "${TORCH_INCLUDE_DIRS}"
+#  LIBRARIES "${TORCH_LIBRARIES}"
 #  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+#  DEPENDS TORCH
 )
 
 ###########
@@ -93,18 +129,18 @@ include_directories(
 
 ## Mark libraries for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
-# install(TARGETS ${PROJECT_NAME}
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-# )
+ install(TARGETS TORCH
+   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+ )
 
 ## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
+ install(DIRECTORY ${Torch_INCLUDE_DIRS}
+   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+   FILES_MATCHING PATTERN "*.h"
+   PATTERN ".svn" EXCLUDE
+ )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
