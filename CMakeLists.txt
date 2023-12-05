@@ -1,5 +1,8 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.24.0)
 project(torch_vendor)
+include(FetchContent)
+
+cmake_policy(SET CMP0135 NEW)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -9,10 +12,34 @@ find_package(catkin REQUIRED)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
-## Uncomment this if the package has a setup.py. This macro ensures
-## modules and global scripts declared therein get installed
-## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
+set(FETCHCONTENT_QUIET FALSE)
+FetchContent_Declare(
+  libtorch
+  URL https://download.pytorch.org/libtorch/cu121/libtorch-cxx11-abi-shared-with-deps-2.1.1%2Bcu121.zip
+  OVERRIDE_FIND_PACKAGE
+  DOWNLOAD_EXTRACT_TIMESTAMP
+)
+FetchContent_MakeAvailable(libtorch)
+
+find_package(Torch REQUIRED PATHS ${libtorch_SOURCE_DIR} NO_DEFAULT_PATH)
+message(WARNING "Torch_FOUND: ${Torch_FOUND}")
+message(WARNING "TORCH_FOUND: ${TORCH_FOUND}")
+message(WARNING "TORCH_INCLUDE_DIRS: ${TORCH_INCLUDE_DIRS}")
+message(WARNING "TORCH_LIBRARIES: ${TORCH_LIBRARIES}")
+message(WARNING "TORCH_LIBRARY: ${TORCH_LIBRARY}")
+message(WARNING "libtorch_SOURCE_DIR: ${libtorch_SOURCE_DIR}")
+message(WARNING "libtorch_BINARY_DIR: ${libtorch_BINARY_DIR}")
+message(WARNING "CATKIN_PACKAGE_LIB_DESTINATION: ${CATKIN_PACKAGE_LIB_DESTINATION}")
+message(WARNING "CATKIN_GLOBAL_BIN_DESTINATION: ${CATKIN_GLOBAL_BIN_DESTINATION}")
+message(WARNING "CATKIN_PACKAGE_INCLUDE_DESTINATION: ${CATKIN_PACKAGE_INCLUDE_DESTINATION}")
+
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+
+#get_cmake_property(_variableNames VARIABLES)
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message(WARNING "${_variableName}=${${_variableName}}")
+#endforeach()
 
 ###################################
 ## catkin specific configuration ##
@@ -24,10 +51,10 @@ find_package(catkin REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES torch_vendor
+  INCLUDE_DIRS ${libtorch_SOURCE_DIR}/include/
+#  LIBRARIES "${TORCH_LIBRARIES}"
 #  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+#  DEPENDS TORCH
 )
 
 ###########
@@ -112,6 +139,17 @@ include_directories(
 #   # myfile2
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
+
+install(DIRECTORY ${libtorch_SOURCE_DIR}/include/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+install(DIRECTORY ${libtorch_SOURCE_DIR}/lib/
+  DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
+
+install(DIRECTORY ${libtorch_SOURCE_DIR}/share/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
 #############
 ## Testing ##
