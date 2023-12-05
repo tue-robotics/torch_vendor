@@ -20,15 +20,7 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
   DOWNLOAD_EXTRACT_TIMESTAMP
 )
-#FetchContent_Populate(Torch)
 FetchContent_MakeAvailable(libtorch)
-#FetchContent_GetProperties(Torch)
-#if(NOT torch_POPULATED)
-#    FetchContent_Populate(torch)
-#    add_subdirectory(${torch_SOURCE_DIR})
-#    add_subdirectory(${torch_BINARY_DIR})
-#endif()
-#list(APPEND CMAKE_PREFIX_PATH "${torch_SOURCE_DIR}")
 
 find_package(Torch REQUIRED PATHS ${libtorch_SOURCE_DIR} NO_DEFAULT_PATH)
 message(WARNING "Torch_FOUND: ${Torch_FOUND}")
@@ -60,7 +52,7 @@ message(WARNING "CATKIN_PACKAGE_INCLUDE_DESTINATION: ${CATKIN_PACKAGE_INCLUDE_DE
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS "${TORCH_INCLUDE_DIRS}"
+  INCLUDE_DIRS ${libtorch_SOURCE_DIR}/include/
 #  LIBRARIES "${TORCH_LIBRARIES}"
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS TORCH
@@ -129,18 +121,18 @@ include_directories(
 
 ## Mark libraries for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
- install(TARGETS TORCH
-   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
- )
+# install(TARGETS ${PROJECT_NAME}
+#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+# )
 
 ## Mark cpp header files for installation
- install(DIRECTORY ${Torch_INCLUDE_DIRS}
-   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-   FILES_MATCHING PATTERN "*.h"
-   PATTERN ".svn" EXCLUDE
- )
+# install(DIRECTORY include/${PROJECT_NAME}/
+#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+#   FILES_MATCHING PATTERN "*.h"
+#   PATTERN ".svn" EXCLUDE
+# )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
@@ -148,6 +140,17 @@ include_directories(
 #   # myfile2
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
+
+install(DIRECTORY ${libtorch_SOURCE_DIR}/include/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+install(DIRECTORY ${libtorch_SOURCE_DIR}/lib/
+  DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
+
+install(DIRECTORY ${libtorch_SOURCE_DIR}/share/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
 #############
 ## Testing ##
