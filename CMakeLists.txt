@@ -3,8 +3,6 @@ project(torch_vendor)
 #set(CMAKE_CUDA_ARCHITECTURES "native")
 include(FetchContent)
 
-cmake_policy(SET CMP0135 NEW)
-
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
