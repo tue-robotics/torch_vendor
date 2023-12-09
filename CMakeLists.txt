@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.24.0)
-project(torch_vendor)
+project(torch_vendor VERSION 0.0.1)
 include(FetchContent)
+include(GNUInstallDirs)
 
 cmake_policy(SET CMP0135 NEW)
 
@@ -32,6 +33,10 @@ message(WARNING "libtorch_BINARY_DIR: ${libtorch_BINARY_DIR}")
 message(WARNING "CATKIN_PACKAGE_LIB_DESTINATION: ${CATKIN_PACKAGE_LIB_DESTINATION}")
 message(WARNING "CATKIN_GLOBAL_BIN_DESTINATION: ${CATKIN_GLOBAL_BIN_DESTINATION}")
 message(WARNING "CATKIN_PACKAGE_INCLUDE_DESTINATION: ${CATKIN_PACKAGE_INCLUDE_DESTINATION}")
+message(WARNING "CMAKE_INSTALL_INCLUDEDIR: ${CMAKE_INSTALL_INCLUDEDIR}")
+message(WARNING "CMAKE_INSTALL_LIBDIR: ${CMAKE_INSTALL_LIBDIR}")
+message(WARNING "CMAKE_INSTALL_NAME_DIR: ${CMAKE_INSTALL_NAME_DIR}")
+message(WARNING "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
@@ -50,12 +55,19 @@ message(WARNING "CATKIN_PACKAGE_INCLUDE_DESTINATION: ${CATKIN_PACKAGE_INCLUDE_DE
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-  INCLUDE_DIRS ${libtorch_SOURCE_DIR}/include/
+#catkin_package(
+#  INCLUDE_DIRS ${libtorch_SOURCE_DIR}/include/
 #  LIBRARIES "${TORCH_LIBRARIES}"
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS TORCH
-)
+#)
+#find_package(catkin QUIET)
+#if(catkin_FOUND)
+#  catkin_package(
+#    SKIP_CMAKE_CONFIG_GENERATION
+#    SKIP_PKG_CONFIG_GENERATION
+#  )
+#endif()
 
 ###########
 ## Build ##
@@ -140,16 +152,29 @@ include_directories(
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
 
+#install(DIRECTORY ${libtorch_SOURCE_DIR}/include/
+#  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+#)
+#install(DIRECTORY ${libtorch_SOURCE_DIR}/lib/
+#  DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#)
+
+#install(DIRECTORY ${libtorch_SOURCE_DIR}/share/
+#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+#)
+
 install(DIRECTORY ${libtorch_SOURCE_DIR}/include/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/torch_vendor
 )
+
 install(DIRECTORY ${libtorch_SOURCE_DIR}/lib/
-  DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/torch_vendor
 )
 
 install(DIRECTORY ${libtorch_SOURCE_DIR}/share/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  DESTINATION share/torch_vendor
 )
+
 
 #############
 ## Testing ##
