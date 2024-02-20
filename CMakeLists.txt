@@ -8,7 +8,7 @@ cmake_policy(SET CMP0135 NEW)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+#find_package(catkin REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -38,6 +38,20 @@ message(WARNING "CMAKE_INSTALL_LIBDIR: ${CMAKE_INSTALL_LIBDIR}")
 message(WARNING "CMAKE_INSTALL_NAME_DIR: ${CMAKE_INSTALL_NAME_DIR}")
 message(WARNING "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
 
+# Create target
+set(TARGET libtorch)
+add_library(${TARGET} SHARED IMPORTED)
+#target_sources(
+#    ${TARGET}
+#    PUBLIC
+#        ${CMAKE_CURRENT_BINARY_DIR}/botan_all.h
+#    PRIVATE
+#        ${CMAKE_CURRENT_BINARY_DIR}/botan_all.cpp
+#)
+target_include_directories(${TARGET} PUBLIC INTERFACE
+  $<BUILD_INTERFACE:${libtorch_SOURCE_DIR}/include>
+)
+
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
 #get_cmake_property(_variableNames VARIABLES)
@@ -61,13 +75,13 @@ message(WARNING "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS TORCH
 #)
-#find_package(catkin QUIET)
-#if(catkin_FOUND)
-#  catkin_package(
-#    SKIP_CMAKE_CONFIG_GENERATION
-#    SKIP_PKG_CONFIG_GENERATION
-#  )
-#endif()
+find_package(catkin QUIET)
+if(catkin_FOUND)
+  catkin_package(
+    SKIP_CMAKE_CONFIG_GENERATION
+    SKIP_PKG_CONFIG_GENERATION
+  )
+endif()
 
 ###########
 ## Build ##
@@ -162,6 +176,10 @@ include_directories(
 #install(DIRECTORY ${libtorch_SOURCE_DIR}/share/
 #  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 #)
+
+install(IMPORTED_RUNTIME_ARTIFACTS ${TARGET}
+  LIBRARY
+)
 
 install(DIRECTORY ${libtorch_SOURCE_DIR}/include/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/torch_vendor
